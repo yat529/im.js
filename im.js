@@ -4,9 +4,12 @@
     // RegExp for Selectors
     var sReg = /^(?:\.([\w-]+)|\#([\w-]+))$/;
 
-    // Function Bank
     var init = {
-        // Extend Functions
+
+        // 
+        // -------------------- Core Functions --------------------------
+        // 
+        
         extend: function(obj, name){
             if(typeof obj !== "object" && typeof obj !== "function") return "Argument must be an Object or function!";
             
@@ -112,8 +115,16 @@
 
     };
 
+    // 
+    // -------------------- Entry Point --------------------------
+    // 
+
     // Object Constructor
     var iAm = function(selector){
+
+        // if only extend methods, for plugins
+        if(!selector) return init;
+
         var F = Object.create(init);
 
         if(sReg.exec(selector)){
@@ -126,8 +137,9 @@
         
     };
 
-
-    // Helper Functions
+    // 
+    // -------------------- Helper Functions --------------------------
+    // 
 
     // Create an im Object
     // Input is HTMLelement or HTMLCollection
@@ -144,11 +156,16 @@
         return (obj.length && obj[0] && typeof obj[0])? true : false;
     }
 
+    // 
+    // -------------------- Core Methods --------------------------
+    // 
 
-    // Extend features
     init.extend({
 
-        // DOM Traversal
+        // 
+        // -------------------- DOM Traversal --------------------------
+        // 
+
         // Return children Array
         children: function(){
             return createObj( this[0].children );
@@ -188,7 +205,7 @@
 
         // Return lastSibling Object
         lastSibling: function(){
-            return createObj( this[0].lastElementSibling ); 
+            return createObj( this[0].parentElement.children[this[0].parentElement.children.length - 1] ); 
         },
 
         // Return siblings Array
@@ -202,7 +219,7 @@
             var match = [],
                 next = this[0].nextElementSibling;
 
-            while(next.nodeType === 1){
+            while(next){
                 match.push(next);
                 next = next.nextElementSibling;
             }
@@ -215,7 +232,7 @@
             var match = [],
             next = this[0].previousElementSibling;
 
-            while(next.nodeType === 1){
+            while(next){
                 match.push(next);
                 next = next.previousElementSibling;
             }
@@ -255,6 +272,18 @@
             // return a Object with HTMLCollection
             return createObj(parentList);
         },
+
+        // 
+        // -------------------- Content Manipulation --------------------------
+        //       
+
+        html: function(html) {
+            this[0].innerHTML = html;
+        },
+
+        // 
+        // -------------------- Attribute Manipulation --------------------------
+        // 
         
         // Get all attribute of a DOM element
         data: function(attr){
@@ -290,6 +319,10 @@
             return this[0].classList.contains(cls)? true : false;
         },
 
+        // 
+        // -------------------- Styling --------------------------
+        // 
+
         // css
         // Argument: String: the css property name, or Object: in key value pair
         css: function(property){
@@ -320,6 +353,10 @@
             return this;
         },
 
+        // 
+        // -------------------- Events --------------------------
+        // 
+
         // click event
         click: function(callback){
             if(typeof callback !== "function") return "Paramete Type Error";
@@ -349,15 +386,41 @@
             return this;
         },
 
-        // innerHTML
-        html: function(html){
-            if(typeof html === "string")
-                return this[0].innerHTML = html;
+        // focus event
+        onfocus: function(callback) {
+            if(typeof callback !== "function") return "Parameter Type Error";
+            this[0].addEventListener("focus", callback.bind(this), false);
         },
+
+        focus: function() {
+            this[0].focus();
+        },
+
+        // blur event (out of focus)
+        onblur: function(callback) {
+            if(typeof callback !== "function") return "Parameter Type Error";
+            this[0].addEventListener("blur", callback.bind(this), false);
+        },
+
+        // keydown event
+        keydown: function(callback) {
+            if(typeof callback !== "function") return "Parameter Type Error";
+            this[0].addEventListener("keydown", callback.bind(this), false);
+        },
+
+        // keyup event
+        keyup: function(callback) {
+            if(typeof callback !== "function") return "Parameter Type Error";
+            this[0].addEventListener("keyup", callback.bind(this), false);
+        }
 
     });
 
-    // export to gloabl
+    // 
+    // -------------------- Exit Point --------------------------
+    // 
+
+    // Export to Gloabl
     global.im = iAm;
 
 })(window);
