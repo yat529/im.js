@@ -29,7 +29,6 @@
 
         // Selector API, can use .classname or #id
         get: function(selector, ctx){
-            if(typeof selector !== "string") return "Selector must be String Type";
             var match = sReg.exec(selector),
                 ctx;
 
@@ -83,7 +82,7 @@
                     var obj = Object.create(init);
                     obj[0] = array[j];
                     // change this and the argument to obj
-                    f.call(obj, obj);
+                    f.call(obj, j);
                 })(i, fn);
             }
         },
@@ -100,6 +99,11 @@
             // this[0] = this[0][(this[0].length - 1)];
             // return this;
             return createObj( this[0][(this[0].length - 1)] );
+        },
+
+        // Get array length
+        getLength: function() {
+            return this[0].length;
         },
 
         // add to array
@@ -133,6 +137,9 @@
             return createObj(selector);
         }else if(selector === document){
             return createObj(document);
+        } else if(typeof selector === "object") {
+            // wrap DOM obj
+            return createObj(selector);
         }
         
     };
@@ -162,10 +169,25 @@
 
     init.extend({
 
-        // 
-        // -------------------- DOM Traversal --------------------------
-        // 
+        // Query DOM
+        find: function(selector) {
+            var match = sReg.exec(selector);
 
+            if(match[1]){
+                return createObj( this[0].getElementsByClassName(match[1]) );
+            }else if(match[2]){
+                return createObj( this[0].getElementById(match[2]) );
+            }
+        },
+
+        // DOM Manipulate
+        // add html
+        html: function(html) {
+            this[0].innerHTML = html;
+            return this;
+        },
+
+        // DOM Traversal
         // Return children Array
         children: function(){
             return createObj( this[0].children );
@@ -272,20 +294,12 @@
             // return a Object with HTMLCollection
             return createObj(parentList);
         },
-
-        // 
-        // -------------------- Content Manipulation --------------------------
-        //       
-
-        html: function(html) {
-            this[0].innerHTML = html;
-        },
-
-        // 
-        // -------------------- Attribute Manipulation --------------------------
-        // 
         
         // Get all attribute of a DOM element
+        attr: function(attr) {
+            return this[0].getAttribute(attr) || undefined;
+        },
+
         data: function(attr){
             if(typeof attr !== "string") return "Attributes must be String Type";
             return this[0].getAttribute("data-" + attr) || undefined;
@@ -319,10 +333,6 @@
             return this[0].classList.contains(cls)? true : false;
         },
 
-        // 
-        // -------------------- Styling --------------------------
-        // 
-
         // css
         // Argument: String: the css property name, or Object: in key value pair
         css: function(property){
@@ -352,10 +362,6 @@
                 this[0].setAttribute("style", "display:block;");
             return this;
         },
-
-        // 
-        // -------------------- Events --------------------------
-        // 
 
         // click event
         click: function(callback){
@@ -412,7 +418,13 @@
         keyup: function(callback) {
             if(typeof callback !== "function") return "Parameter Type Error";
             this[0].addEventListener("keyup", callback.bind(this), false);
-        }
+        },
+
+        // scroll event 
+        // on element
+        scroll: function(callback) {
+            this[0].addEventListener("scroll", callback.bind(this), false);
+        },
 
     });
 
@@ -421,6 +433,6 @@
     // 
 
     // Export to Gloabl
-    global.im = iAm;
+    global.im = im = iAm;
 
 })(window);
