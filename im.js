@@ -39,7 +39,7 @@
             if(match[1]){
                 this[0] = ctx.getElementsByClassName(match[1]);
             }else if(match[2]){
-                this[0] = ctx.getElementById(match[2]);
+                this[0] = document.getElementById(match[2]);
             }
 
             this.length = 1;
@@ -176,7 +176,7 @@
             if(match[1]){
                 return createObj( this[0].getElementsByClassName(match[1]) );
             }else if(match[2]){
-                return createObj( this[0].getElementById(match[2]) );
+                return createObj( document.getElementById(match[2]) );
             }
         },
 
@@ -223,6 +223,11 @@
         // Return nextSibling Object
         nextSibling: function(){
             return createObj( this[0].nextElementSibling );  
+        },
+
+        // 
+        previousSibling: function(){
+            return createObj( this[0].previousElementSibling );
         },
 
         // Return lastSibling Object
@@ -364,9 +369,22 @@
         },
 
         // click event
-        click: function(callback){
+        click: function(callback, bubbling){
             if(typeof callback !== "function") return "Paramete Type Error";
-            this[0].addEventListener("click", callback.bind(this), false);
+
+            var bubbling = bubbling === undefined ? true : bubbling;
+            var callback = callback;
+
+            this[0].addEventListener("click", (function(e) {
+                if(!bubbling) {
+                    if(this[0] === e.target) {
+                        callback.call(this);
+                    }
+                } else {
+                    callback.call(this);
+                }
+            }).bind(this), false);
+              
         },
 
         // if not click on this element
