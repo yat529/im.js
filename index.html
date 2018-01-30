@@ -29,11 +29,17 @@
     <title>im.js</title>
 </head>
 <body>
-    <div id="target"></div>
+    <div id="target"><span id="ops">asd</span></div>
+
     <script src="im.js"></script>
     <script>
         
-        im("#target").addClass("style").html("Hello World!");
+        im("#target").addClass("style")
+        // .html("Hello World!");
+
+        im("#target").click(function(){
+            console.log(true);
+        }, false);
 
     </script>
 </body>
