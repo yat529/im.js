@@ -195,7 +195,7 @@
             return createObj( this[0].nextElementSibling );  
         },
 
-        // 
+        // Return previousSibling
         previousSibling: function(){
             return createObj( this[0].previousElementSibling );
         },
